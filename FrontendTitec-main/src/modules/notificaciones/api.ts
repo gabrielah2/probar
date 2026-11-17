@@ -76,9 +76,8 @@ function normalizar_notificacion(valor: unknown): Notificacion {
 
 function verificar_respuesta(res: Response, mensaje_error: string): void {
   if (res.status === 401) {
-    window.location.assign("/auth");
-    throw new Error("La sesión expiró. Inicia sesión nuevamente.");
-  }
+  throw new Error("La sesión expiró. Inicia sesión nuevamente.");
+}
   if (res.status === 403) {
     throw new Error("No tienes permiso para acceder a estas notificaciones.");
   }
@@ -91,7 +90,7 @@ function verificar_respuesta(res: Response, mensaje_error: string): void {
 }
 
 export async function obtener_notificaciones(signal?: AbortSignal): Promise<Notificacion[]> {
-  const res = await fetch(`${GATEWAY_URL}${BASE_PATH}`, {
+  const res = await fetch(`${GATEWAY_URL}/api/notificaciones/eventos`, {
     signal,
     credentials: "include",
   });
@@ -100,9 +99,7 @@ export async function obtener_notificaciones(signal?: AbortSignal): Promise<Noti
   if (!Array.isArray(respuesta)) {
     throw new Error("El servicio devolvió una lista de notificaciones inválida.");
   }
-  return respuesta
-    .map(normalizar_notificacion)
-    .filter((notificacion) => notificacion.tipo.toUpperCase() !== "COMPRA");
+  return respuesta.map(normalizar_notificacion);
 }
 
 async function solicitar_actualizacion(
